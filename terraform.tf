@@ -2,6 +2,9 @@ variable "do_token" {}
 variable "cloudflare_email" {}
 variable "cloudflare_token" {}
 
+variable "vm_count" {
+  default = 1
+}
 
 provider "digitalocean" {
   token = "${var.do_token}"
@@ -19,6 +22,8 @@ data "digitalocean_ssh_key" "ondrejsika" {
 }
 
 resource "digitalocean_droplet" "droplet" {
+  count = var.vm_count
+
   image  = "docker-18-04"
   name   = "droplet"
   region = "fra1"
@@ -29,18 +34,22 @@ resource "digitalocean_droplet" "droplet" {
 }
 
 resource "cloudflare_record" "droplet" {
+  count = var.vm_count
+
   domain = "sikademo.com"
-  name   = "droplet"
-  value  = "${digitalocean_droplet.droplet.ipv4_address}"
+  name   = "droplet${count.index}"
+  value  = "${digitalocean_droplet.droplet[count.index].ipv4_address}"
   type   = "A"
   proxied = false
 }
 
 
 resource "cloudflare_record" "droplet_wildcard" {
+  count = var.vm_count
+
   domain = "sikademo.com"
-  name   = "*.droplet"
-  value  = "droplet.sikademo.com"
+  name   = "*.droplet${count.index}"
+  value  = "droplet${count.index}.sikademo.com"
   type   = "CNAME"
   proxied = false
 }
