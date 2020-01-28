@@ -7,13 +7,13 @@ variable "vm_count" {
 }
 
 provider "digitalocean" {
-  token = "${var.do_token}"
+  token = var.do_token
 }
 
 provider "cloudflare" {
   version = "~> 1.0"
-  email = "${var.cloudflare_email}"
-  token = "${var.cloudflare_token}"
+  email = var.cloudflare_email
+  token = var.cloudflare_token
 }
 
 
@@ -38,7 +38,7 @@ resource "cloudflare_record" "droplet" {
 
   domain = "sikademo.com"
   name   = "droplet${count.index}"
-  value  = "${digitalocean_droplet.droplet[count.index].ipv4_address}"
+  value  = digitalocean_droplet.droplet[count.index].ipv4_address
   type   = "A"
   proxied = false
 }
