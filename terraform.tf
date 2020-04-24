@@ -2,10 +2,6 @@ variable "do_token" {}
 variable "cloudflare_email" {}
 variable "cloudflare_token" {}
 
-variable "vm_count" {
-  default = 1
-}
-
 provider "digitalocean" {
   token = var.do_token
 }
@@ -21,35 +17,32 @@ data "digitalocean_ssh_key" "ondrejsika" {
   name = "ondrejsika"
 }
 
-resource "digitalocean_droplet" "droplet" {
-  count = var.vm_count
-
+resource "digitalocean_droplet" "rancher" {
   image  = "docker-18-04"
-  name   = "droplet"
+  name   = "rancher"
   region = "fra1"
-  size   = "s-1vcpu-2gb"
+  size   = "s-1vcpu-1gb"
   ssh_keys = [
     data.digitalocean_ssh_key.ondrejsika.id
   ]
+
+  connection {
+    user        = "root"
+    type        = "ssh"
+    host        = self.ipv4_address
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "docker run --name rancher -d --restart=always -p 80:80 -p 443:443 rancher/rancher:latest --acme-domain rancher.sikademo.com",
+    ]
+  }
 }
 
 resource "cloudflare_record" "droplet" {
-  count = var.vm_count
-
   domain = "sikademo.com"
-  name   = "droplet${count.index}"
-  value  = digitalocean_droplet.droplet[count.index].ipv4_address
+  name   = "rancher"
+  value  = digitalocean_droplet.rancher.ipv4_address
   type   = "A"
-  proxied = false
-}
-
-
-resource "cloudflare_record" "droplet_wildcard" {
-  count = var.vm_count
-
-  domain = "sikademo.com"
-  name   = "*.droplet${count.index}"
-  value  = "droplet${count.index}.sikademo.com"
-  type   = "CNAME"
   proxied = false
 }
