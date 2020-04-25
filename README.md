@@ -14,8 +14,8 @@ terraform apply -auto-approve
 
 ## Connect
 
- ```
-ssh root@droplet.sikademo.com
+```
+ssh root@rancher.sikademo.com
 ```
 
 
