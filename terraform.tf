@@ -21,7 +21,7 @@ resource "digitalocean_droplet" "rancher" {
   image  = "docker-18-04"
   name   = "rancher"
   region = "fra1"
-  size   = "s-1vcpu-1gb"
+  size   = "s-4vcpu-8gb"
   ssh_keys = [
     data.digitalocean_ssh_key.ondrejsika.id
   ]
