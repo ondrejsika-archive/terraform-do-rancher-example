@@ -18,7 +18,7 @@ data "digitalocean_ssh_key" "ondrejsika" {
 }
 
 resource "digitalocean_droplet" "rancher" {
-  image  = "docker-18-04"
+  image  = "rancheros"
   name   = "rancher"
   region = "fra1"
   size   = "s-4vcpu-8gb"
@@ -27,7 +27,7 @@ resource "digitalocean_droplet" "rancher" {
   ]
 
   connection {
-    user        = "root"
+    user        = "rancher"
     type        = "ssh"
     host        = self.ipv4_address
   }
