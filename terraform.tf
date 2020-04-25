@@ -34,7 +34,8 @@ resource "digitalocean_droplet" "rancher" {
 
   provisioner "remote-exec" {
     inline = [
-      "docker run -q --name rancher -d --restart=always -p 80:80 -p 443:443 rancher/rancher:latest --acme-domain rancher.sikademo.com",
+      "docker pull -q rancher/rancher:latest",
+      "docker run --name rancher -d --restart=always -p 80:80 -p 443:443 rancher/rancher:latest --acme-domain rancher.sikademo.com",
     ]
   }
 }
